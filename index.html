@@ -64,34 +64,44 @@
             margin-top: 10px;
             display: inline-block;
         }
-        btn-download:hover { background: #004999; }
+        .btn-download:hover { background: #004999; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🛡️ MaskingVault</h1>
-    <p>Arrasta o teu ficheiro (.json, .txt, .csv) com dados sensíveis de erro para sanitizar automaticamente antes de partilhar.</p>
+    <p>Arrasta o teu ficheiro com dados sensíveis para sanitizar automaticamente antes de partilhar.</p>
 
     <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
         📄 <strong>Clica aqui ou arrasta o ficheiro</strong> para sanitizar
         <input type="file" id="fileInput" onchange="enviarFicheiro(this.files[0])">
     </div>
 
+    <!-- Resultados e Área de Partilha (inicialmente escondidos) -->
     <div class="results" id="resultsBox">
         <div class="stats" id="statsBox"></div>
         <h3>Ficheiro Sanitizado (Pronto a partilhar):</h3>
         <textarea id="outputArea" readonly></textarea>
 
-        <button class="btn-download" onclick="baixarFicheiro()">💾 Baixar Ficheiro Sanitizado</button>
+        <div style="margin-top: 15px;">
+            <button class="btn-download" onclick="baixarFicheiro()">💾 Baixar Ficheiro Sanitizado</button>
+        </div>
+        
+        <!-- Caixa do Link ao estilo WeTransfer (só aparece após o processamento) -->
+        <div id="linkBox" style="margin-top: 20px; display: none;">
+            <label for="linkPartilha"><strong>🔗 Link Seguro de Partilha:</strong></label>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <input type="text" id="linkPartilha" readonly style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: monospace; background: #f9f9f9;">
+                <button class="btn-download" onclick="copiarLink()" style="background: #0066cc; margin-top: 0;">📋 Copiar Link</button>
+            </div>
+        </div>
     </div>
     
 </div>
 
 <script>
-    // Variáveis globais para guardar os dados do último ficheiro processado
-    let textoSanitizadoGlobal = "";
-    let nomeOriginalFicheiro = "documento_sanitizado.txt";
+    let nomePdfDownload = "";
 
     async function enviarFicheiro(ficheiro) {
         if (!ficheiro) return;
@@ -106,34 +116,42 @@
 
         let data = await response.json();
 
-        // Guardamos os dados nas variáveis globais para o download posterior
-        textoSanitizadoGlobal = data.conteudo_sanitizado;
-        nomeOriginalFicheiro = data.nome_ficheiro || "documento_sanitizado.txt";
+        // Guardamos o nome único do PDF gerado no servidor
+        nomePdfDownload = data.ficheiro_pdf;
 
+        // Construir o link absoluto estilo WeTransfer baseado no servidor atual
+        const urlBase = window.location.origin;
+        const linkSeguro = `${urlBase}/download/${nomePdfDownload}`;
+
+        // Mostrar os resultados e a caixa do link
         document.getElementById("resultsBox").style.display = "block";
+        document.getElementById("linkBox").style.display = "block";
+
         document.getElementById("statsBox").innerHTML = `
             ✅ <strong>Ficheiro Limpo:</strong> ${data.nome_ficheiro}<br>
             🛡️ <strong>Total de Dados Sanitizados:</strong> ${data.total_mascarados} (NIFs: ${data.detalhes.nifs}, E-mails: ${data.detalhes.emails}, Telemóveis: ${data.detalhes.telefones})
         `;
-        document.getElementById("outputArea").value = textoSanitizadoGlobal;
+        document.getElementById("outputArea").value = data.conteudo_sanitizado;
+        
+        // Preencher o input com o link seguro único
+        document.getElementById("linkPartilha").value = linkSeguro;
     }
 
-    // Função chamada pelo botão no HTML para fazer o download
     function baixarFicheiro() {
-        if (!textoSanitizadoGlobal) {
+        if (!nomePdfDownload) {
             alert("Ainda não há nenhum ficheiro processado para baixar!");
             return;
         }
+        // Abre a rota do servidor que entrega o PDF formatado
+        window.location.href = `/download/${nomePdfDownload}`;
+    }
 
-        const blob = new Blob([textoSanitizadoGlobal], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "sanitizado_" + nomeOriginalFicheiro.replace(/\.[^/.]+$/, "") + ".txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    function copiarLink() {
+        const inputLink = document.getElementById("linkPartilha");
+        inputLink.select();
+        inputLink.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(inputLink.value);
+        alert("Link seguro copiado para a área de transferência!");
     }
 </script>
 

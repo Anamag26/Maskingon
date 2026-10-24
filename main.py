@@ -1,8 +1,13 @@
 import re
 import io
+import uuid
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from fastapi.responses import HTMLResponse, FileResponse
 import os
 from pypdf import PdfReader
 
@@ -16,6 +21,32 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def gerar_pdf_sanitizado(texto_limpo: str, caminho_saida: str):
+    """
+    Gera um ficheiro PDF limpo e formatado com o texto sanitizado.
+    """
+    doc = SimpleDocTemplate(caminho_saida, pagesize=letter, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
+    story = []
+    
+    styles = getSampleStyleSheet()
+    estilo_corpo = ParagraphStyle(
+        'EstiloCorpo',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=10,
+        leading=14,
+        textColor='#333333'
+    )
+    
+    # Dividir o texto por linhas para manter a estrutura dos parágrafos
+    linhas = texto_limpo.split('\n')
+    for linha in linhas:
+        if linha.strip():
+            story.append(Paragraph(linha, estilo_corpo))
+            story.append(Spacer(1, 6))
+            
+    doc.build(story)
 
 def sanitizar_texto(texto: str):
     """
@@ -75,13 +106,27 @@ async def processar_ficheiro(file: UploadFile = File(...)):
     # Sanitizar o conteúdo obtido
     texto_sanitizado, estatisticas, total = sanitizar_texto(texto_original)
 
+    # Criar um PDF limpo temporário na pasta local
+    # Criar um identificador único curto para o link
+    codigo_unico = str(uuid.uuid4())[:8]
+    nome_pdf_saida = f"sanitizado_{codigo_unico}.pdf"
+    gerar_pdf_sanitizado(texto_sanitizado, nome_pdf_saida)
+
     return {
         "status": "sucesso",
         "nome_ficheiro": file.filename,
+        "ficheiro_pdf": nome_pdf_saida,
         "total_mascarados": total,
         "detalhes": estatisticas,
         "conteudo_sanitizado": texto_sanitizado
     }
+
+# Nova rota para descarregar o PDF gerado
+@app.get("/download/{nome_ficheiro}")
+async def descarregar_pdf(nome_ficheiro: str):
+    if os.path.exists(nome_ficheiro):
+        return FileResponse(path=nome_ficheiro, filename=nome_ficheiro, media_type="application/pdf")
+    return {"erro": "Ficheiro não encontrado"}
 
 # Servir a página Web simples
 @app.get("/", response_class=HTMLResponse)

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaskingVault — O teu Painel</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0066cc;
+            --border-color: #d2d2d7;
+            --drop-bg: #fafafa;
+            --drop-hover: #f0f4f8;
+            --stats-bg: #f5f5f7;
+            --btn-idle-bg: #e8e8ed;
+            --btn-idle-hover: #ffffff;
+            --btn-idle-text: #1d1d1f;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        body.dark-theme {
+            --bg-color: #000000;
+            --card-bg: #1c1c1e;
+            --text-primary: #f5f5f7;
+            --text-secondary: #98989d;
+            --accent-blue: #0a84ff;
+            --border-color: #38383a;
+            --drop-bg: #2c2c2e;
+            --drop-hover: #3a3a3c;
+            --stats-bg: #2c2c2e;
+            --btn-idle-bg: #2c2c2e;
+            --btn-idle-hover: #3a3a3c;
+            --btn-idle-text: #f5f5f7;
+            --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .logo { font-size: 20px; font-weight: 600; }
+        .user-menu { display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text-secondary); }
+
+        .btn-logout {
+            background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);
+            padding: 6px 14px; border-radius: 980px; font-size: 12px; cursor: pointer;
+        }
+
+        .container {
+            background: var(--card-bg); padding: 40px; border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle); border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 40px;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 40px 20px;
+            text-align: center; background: var(--drop-bg); cursor: pointer; transition: all 0.25s ease; margin-bottom: 24px;
+        }
+        .drop-zone:hover { border-color: var(--accent-blue); background: var(--drop-hover); }
+        .drop-zone svg { width: 32px; height: 32px; stroke: var(--text-secondary); fill: none; margin-bottom: 8px; }
+        .drop-zone span { display: block; font-size: 15px; font-weight: 500; margin-top: 4px; }
+        .drop-zone small { color: var(--text-secondary); font-size: 13px; }
+
+        input[type="file"] { display: none; }
+
+        .results { display: none; margin-top: 20px; }
+        .stats {
+            background: var(--stats-bg); border: 1px solid var(--border-color); padding: 16px;
+            border-radius: var(--radius-md); font-size: 14px; line-height: 1.6; margin-bottom: 20px;
+            display: flex; gap: 12px;
+        }
+        .stats svg { width: 18px; height: 18px; stroke: var(--accent-blue); fill: none; flex-shrink: 0; }
+
+        .btn-expandable {
+            background: var(--btn-idle-bg); color: var(--btn-idle-text); border: 1px solid var(--border-color);
+            height: 40px; padding: 0 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center;
+            font-size: 13px; font-weight: 500; overflow: hidden; white-space: nowrap; transition: all 0.35s ease;
+        }
+        .btn-expandable svg { width: 16px; height: 16px; stroke: currentColor; fill: none; flex-shrink: 0; }
+        .btn-text { max-width: 0; opacity: 0; transition: all 0.35s ease; margin-left: 0; }
+        .btn-expandable:hover { background: var(--btn-idle-hover); }
+        .btn-expandable:hover .btn-text { max-width: 140px; opacity: 1; margin-left: 8px; }
+
+        .link-input-group { display: flex; gap: 10px; margin-top: 8px; align-items: center; }
+        .link-input-group input {
+            flex: 1; padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);
+            font-family: monospace; font-size: 13px; background: var(--stats-bg); color: var(--text-primary);
+        }
+
+        /* Histórico */
+        h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+        .history-list { display: flex; flex-direction: column; gap: 10px; }
+        .history-item {
+            background: var(--card-bg); padding: 16px 20px; border-radius: var(--radius-md);
+            border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;
+        }
+        .history-info strong { display: block; font-size: 14px; }
+        .history-info small { color: var(--text-secondary); font-size: 12px; }
+
+        .theme-toggle-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px; border-radius: 50%;
+            border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); z-index: 1000;
+        }
+        .theme-toggle-btn svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .icon-sun { display: block; } .icon-moon { display: none; }
+        body.dark-theme .icon-sun { display: none; } body.dark-theme .icon-moon { display: block; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">MaskingVault</div>
+    <div class="user-menu">
+        <span id="userName">Carregando...</span>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span>Clica aqui ou arrasta o teu ficheiro</span>
+        <small>Suporta PDF, JSON, HTML, TXT e qualquer formato de texto</small>
+        <input type="file" id="fileInput" onchange="enviarFicheiro(this.files[0])">
+    </div>
+
+    <div class="results" id="resultsBox">
+        <div class="stats">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div id="typingStats"></div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <button class="btn-expandable" onclick="baixarFicheiro()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span class="btn-text">Baixar PDF</span>
+            </button>
+        </div>
+
+        <div class="link-input-group">
+            <input type="text" id="linkPartilha" readonly>
+            <button class="btn-expandable" onclick="copiarLink()">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span class="btn-text">Copiar Link</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<h2>O Teu Histórico de Sanitizações</h2>
+<div class="history-list" id="historyList">
+    <p style="color: var(--text-secondary); font-size: 14px;">A carregar o teu histórico...</p>
+</div>
+
+<button class="theme-toggle-btn" onclick="toggleTheme()" title="Mudar Tema">
+    <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</button>
+
+<script>
+    let nomePdfDownload = "";
+
+    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+
+    async function loadUser() {
+        const res = await fetch('/api/user');
+        if (!res.ok) { window.location.href = '/'; return; }
+        const u = await res.json();
+        document.getElementById('userName').innerText = u.name;
+        loadHistory();
+    }
+
+    async function loadHistory() {
+        const res = await fetch('/api/history');
+        if (!res.ok) return;
+        const list = await res.json();
+        const container = document.getElementById('historyList');
+        if (list.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Ainda não processaste nenhum documento.</p>';
+            return;
+        }
+        container.innerHTML = list.map(item => `
+            <div class="history-item">
+                <div class="history-info">
+                    <strong>${item.original_name}</strong>
+                    <small>${item.masked_count} dados ocultos • ${item.created_at}</small>
+                </div>
+                <a href="/download/${item.pdf_name}" class="btn-expandable" style="text-decoration: none;" download>
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span class="btn-text">Baixar PDF</span>
+                </a>
+            </div>
+        `).join('');
+    }
+
+    async function logout() {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    }
+
+    function typeWriter(elementoId, texto, velocidade = 12) {
+        const elemento = document.getElementById(elementoId);
+        elemento.innerHTML = "";
+        let i = 0;
+        function escrever() {
+            if (i < texto.length) {
+                elemento.innerHTML += texto.charAt(i) === '\n' ? '<br>' : texto.charAt(i);
+                i++;
+                setTimeout(escrever, velocidade);
+            }
+        }
+        escrever();
+    }
+
+    async function enviarFicheiro(ficheiro) {
+        if (!ficheiro) return;
+        let formData = new FormData();
+        formData.append("file", ficheiro);
+
+        let response = await fetch("/sanitizar", { method: "POST", body: formData });
+        if (!response.ok) { alert("Erro ao processar ficheiro."); return; }
+
+        let data = await response.json();
+        nomePdfDownload = data.ficheiro_pdf;
+
+        document.getElementById("resultsBox").style.display = "block";
+        const linkSeguro = `${window.location.origin}/download/${nomePdfDownload}`;
+
+        const textoEstatisticas = `Ficheiro processado: ${data.nome_ficheiro}\nTotal de dados mascarados: ${data.total_mascarados} (NIFs: ${data.detalhes.nifs}, E-mails: ${data.detalhes.emails}, Telemóveis: ${data.detalhes.telefones})`;
+        typeWriter("typingStats", textoEstatisticas);
+
+        document.getElementById("linkPartilha").value = linkSeguro;
+        loadHistory();
+    }
+
+    function baixarFicheiro() {
+        if (nomePdfDownload) window.location.href = `/download/${nomePdfDownload}`;
+    }
+
+    function copiarLink() {
+        const input = document.getElementById("linkPartilha");
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        alert("Link seguro copiado!");
+    }
+
+    loadUser();
+</script>
+</body>
+</html>

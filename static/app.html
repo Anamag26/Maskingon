@@ -16,13 +16,18 @@
             --drop-hover: #f0f4f8;
             --stats-bg: #f5f5f7;
             --btn-idle-bg: #e8e8ed;
-            --btn-idle-hover: #ffffff;
+            --btn-idle-hover: #e0e0e5;
             --btn-idle-text: #1d1d1f;
             --radius-lg: 20px;
-            --radius-md: 12px;
+            --radius-md: 14px;
             --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.04);
+            --shadow-dropdown: 0 10px 20px rgba(0, 0, 0, 0.06);
+            --btn-danger-bg: #ffebee;
+            --btn-danger-text: #c62828;
+            --apple-red: #ff3b30;
         }
 
+        /* Tema Escuro Atribuído por Classe ou Sistema */
         body.dark-theme {
             --bg-color: #000000;
             --card-bg: #1c1c1e;
@@ -37,26 +42,175 @@
             --btn-idle-hover: #3a3a3c;
             --btn-idle-text: #f5f5f7;
             --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.4);
+            --btn-danger-bg: #3c1e22;
+            --btn-danger-text: #ff8a80;
+            --apple-red: #ff453a;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
             background-color: var(--bg-color);
             color: var(--text-primary);
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0;
+            padding: 0;
             -webkit-font-smoothing: antialiased;
             transition: background-color 0.3s, color 0.3s;
         }
 
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .logo { font-size: 20px; font-weight: 600; }
-        .user-menu { display: flex; align-items: center; gap: 16px; font-size: 14px; color: var(--text-secondary); }
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 100%;
+            padding: 30px 40px;
+            box-sizing: border-box;
+        }
+        .logo { font-size: 22px; font-weight: 600; }
+        
+        /* Puxado para a esquerda com margem ajustada */
+        .user-menu { 
+            position: relative;
+            display: flex; 
+            align-items: center; 
+            margin-right: 180px; 
+        }
 
-        .btn-logout {
-            background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);
-            padding: 6px 14px; border-radius: 980px; font-size: 12px; cursor: pointer;
+        .user-profile-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-profile-btn {
+            background: var(--btn-idle-bg); 
+            color: var(--btn-idle-text); 
+            border: 1px solid var(--border-color);
+            height: 42px; 
+            padding: 0 20px 0 6px; 
+            border-radius: 21px; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center;
+            font-size: 13px; 
+            font-weight: 500; 
+            gap: 10px;
+            transition: background 0.2s, border-radius 0.2s ease;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .user-profile-wrapper:hover .user-profile-btn {
+            background: var(--btn-idle-bg);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .user-avatar-wrapper {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
+        }
+
+        .user-avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar-wrapper svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-secondary);
+            fill: none;
+        }
+
+        .user-name-text { 
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            min-width: 230px;
+            background: var(--btn-idle-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-bottom-left-radius: var(--radius-md);
+            border-bottom-right-radius: var(--radius-md);
+            box-shadow: var(--shadow-dropdown);
+            padding: 0 6px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, padding 0.25s ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .user-profile-wrapper:hover .profile-dropdown {
+            max-height: 150px;
+            opacity: 1;
+            padding: 6px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .dropdown-item svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item:hover {
+            background: var(--card-bg);
+        }
+
+        .dropdown-item.btn-logout-item:hover {
+            background: var(--apple-red);
+            color: #ffffff;
+        }
+        .dropdown-item.btn-logout-item:hover svg {
+            stroke: #ffffff;
+        }
+
+        .main-wrapper {
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+            padding: 0 20px 60px 20px;
         }
 
         .container {
@@ -87,11 +241,21 @@
             background: var(--btn-idle-bg); color: var(--btn-idle-text); border: 1px solid var(--border-color);
             height: 40px; padding: 0 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center;
             font-size: 13px; font-weight: 500; overflow: hidden; white-space: nowrap; transition: all 0.35s ease;
+            text-decoration: none;
         }
         .btn-expandable svg { width: 16px; height: 16px; stroke: currentColor; fill: none; flex-shrink: 0; }
         .btn-text { max-width: 0; opacity: 0; transition: all 0.35s ease; margin-left: 0; }
         .btn-expandable:hover { background: var(--btn-idle-hover); }
         .btn-expandable:hover .btn-text { max-width: 140px; opacity: 1; margin-left: 8px; }
+
+        .btn-delete {
+            background: var(--btn-danger-bg); color: var(--btn-danger-text); border: 1px solid transparent;
+            height: 40px; padding: 0 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center;
+            font-size: 13px; font-weight: 500; overflow: hidden; white-space: nowrap; transition: all 0.35s ease;
+        }
+        .btn-delete svg { width: 16px; height: 16px; stroke: currentColor; fill: none; flex-shrink: 0; }
+        .btn-delete:hover { background: var(--apple-red); color: #fff; }
+        .btn-delete:hover .btn-text { max-width: 140px; opacity: 1; margin-left: 8px; }
 
         .link-input-group { display: flex; gap: 10px; margin-top: 8px; align-items: center; }
         .link-input-group input {
@@ -99,7 +263,6 @@
             font-family: monospace; font-size: 13px; background: var(--stats-bg); color: var(--text-primary);
         }
 
-        /* Histórico */
         h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
         .history-list { display: flex; flex-direction: column; gap: 10px; }
         .history-item {
@@ -108,7 +271,9 @@
         }
         .history-info strong { display: block; font-size: 14px; }
         .history-info small { color: var(--text-secondary); font-size: 12px; }
+        .history-actions { display: flex; gap: 8px; align-items: center; }
 
+        /* Botão para mudar o tema manualmente */
         .theme-toggle-btn {
             position: fixed; bottom: 30px; right: 30px; width: 48px; height: 48px; border-radius: 50%;
             border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary);
@@ -124,45 +289,67 @@
 <header>
     <div class="logo">MaskingVault</div>
     <div class="user-menu">
-        <span id="userName">Carregando...</span>
-        <button class="btn-logout" onclick="logout()">Sair</button>
+        <div class="user-profile-wrapper">
+            <div class="user-profile-btn">
+                <div class="user-avatar-wrapper" id="userAvatarContainer">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="user-name-text" id="userName">Carregando...</span>
+            </div>
+
+            <div class="profile-dropdown">
+                <a href="/repor-palavra-passe" class="dropdown-item">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Repor Palavra-Passe
+                </a>
+                <button class="dropdown-item btn-logout-item" onclick="confirmarLogout()">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Sair
+                </button>
+            </div>
+        </div>
     </div>
 </header>
 
-<div class="container">
-    <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-        <span>Clica aqui ou arrasta o teu ficheiro</span>
-        <small>Suporta PDF, JSON, HTML, TXT e qualquer formato de texto</small>
-        <input type="file" id="fileInput" onchange="enviarFicheiro(this.files[0])">
+<div class="main-wrapper">
+    <div class="container">
+        <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span>Clica aqui ou arrasta o teu ficheiro</span>
+            <small>Suporta PDF, JSON, HTML, TXT e qualquer formato de texto</small>
+            <input type="file" id="fileInput" onchange="enviarFicheiro(this.files[0])">
+        </div>
+
+        <div class="results" id="resultsBox">
+            <div class="stats">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <div id="typingStats"></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                <button class="btn-expandable" onclick="baixarFicheiro()">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span class="btn-text">Baixar PDF</span>
+                </button>
+            </div>
+
+            <div class="link-input-group">
+                <input type="text" id="linkPartilha" readonly>
+                <button class="btn-expandable" onclick="copiarLink()">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="btn-text">Copiar Link</span>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="results" id="resultsBox">
-        <div class="stats">
-            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <div id="typingStats"></div>
-        </div>
-
-        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-            <button class="btn-expandable" onclick="baixarFicheiro()">
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span class="btn-text">Baixar PDF</span>
-            </button>
-        </div>
-
-        <div class="link-input-group">
-            <input type="text" id="linkPartilha" readonly>
-            <button class="btn-expandable" onclick="copiarLink()">
-                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <span class="btn-text">Copiar Link</span>
-            </button>
-        </div>
+    <h2>O Teu Histórico de Sanitizações</h2>
+    <div class="history-list" id="historyList">
+        <p style="color: var(--text-secondary); font-size: 14px;">A carregar o teu histórico...</p>
     </div>
-</div>
-
-<h2>O Teu Histórico de Sanitizações</h2>
-<div class="history-list" id="historyList">
-    <p style="color: var(--text-secondary); font-size: 14px;">A carregar o teu histórico...</p>
 </div>
 
 <button class="theme-toggle-btn" onclick="toggleTheme()" title="Mudar Tema">
@@ -173,13 +360,27 @@
 <script>
     let nomePdfDownload = "";
 
-    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+    // Deteta o tema inicial do dispositivo ou preferência guardada
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-theme');
+    }
+
+    function toggleTheme() { 
+        document.body.classList.toggle('dark-theme'); 
+    }
 
     async function loadUser() {
         const res = await fetch('/api/user');
         if (!res.ok) { window.location.href = '/'; return; }
         const u = await res.json();
+        
         document.getElementById('userName').innerText = u.name;
+        
+        if (u.picture) {
+            const avatarContainer = document.getElementById('userAvatarContainer');
+            avatarContainer.innerHTML = `<img src="${u.picture}" alt="${u.name}">`;
+        }
+
         loadHistory();
     }
 
@@ -198,12 +399,35 @@
                     <strong>${item.original_name}</strong>
                     <small>${item.masked_count} dados ocultos • ${item.created_at}</small>
                 </div>
-                <a href="/download/${item.pdf_name}" class="btn-expandable" style="text-decoration: none;" download>
-                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    <span class="btn-text">Baixar PDF</span>
-                </a>
+                <div class="history-actions">
+                    <a href="/download/${item.pdf_name}" class="btn-expandable" download>
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span class="btn-text">Baixar</span>
+                    </a>
+                    <button class="btn-delete" onclick="apagarFicheiro('${item.pdf_name}')">
+                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <span class="btn-text">Apagar</span>
+                    </button>
+                </div>
             </div>
         `).join('');
+    }
+
+    async function apagarFicheiro(nomeFicheiro) {
+        if (!confirm("Tens a certeza que pretendes apagar este ficheiro?")) return;
+        
+        const res = await fetch(`/api/apagar/${nomeFicheiro}`, { method: 'DELETE' });
+        if (res.ok) {
+            loadHistory();
+        } else {
+            alert("Erro ao apagar o ficheiro.");
+        }
+    }
+
+    function confirmarLogout() {
+        if (confirm("Tens a certeza que pretendes terminar sessão?")) {
+            logout();
+        }
     }
 
     async function logout() {
@@ -230,10 +454,10 @@
         let formData = new FormData();
         formData.append("file", ficheiro);
 
-        let response = await fetch("/sanitizar", { method: "POST", body: formData });
-        if (!response.ok) { alert("Erro ao processar ficheiro."); return; }
+        let responseReal = await fetch("/sanitizar", { method: "POST", body: formData });
+        if (!responseReal.ok) { alert("Erro ao processar ficheiro."); return; }
 
-        let data = await response.json();
+        let data = await responseReal.json();
         nomePdfDownload = data.ficheiro_pdf;
 
         document.getElementById("resultsBox").style.display = "block";

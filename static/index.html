@@ -137,7 +137,9 @@
             color: var(--text-primary);
             box-sizing: border-box;
             font-size: 14px;
+            outline: none;
         }
+        .form-group input:focus { border-color: var(--accent-blue); }
 
         .toggle-auth { text-align: center; font-size: 13px; color: var(--accent-blue); margin-top: 16px; cursor: pointer; }
 
@@ -149,6 +151,7 @@
             background: var(--card-bg); color: var(--text-primary);
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); z-index: 1000;
+            transition: background-color 0.3s, color 0.3s;
         }
         .theme-toggle-btn svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
         .icon-sun { display: block; } .icon-moon { display: none; }
@@ -227,7 +230,14 @@
 <script>
     let authMode = 'login';
 
-    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+    // Deteta automaticamente o tema do dispositivo ao carregar a página
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark-theme');
+    }
+
+    function toggleTheme() { 
+        document.body.classList.toggle('dark-theme'); 
+    }
 
     function openAuth(mode) {
         authMode = mode;

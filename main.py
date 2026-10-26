@@ -12,6 +12,8 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
+import os
+from fastapi import HTTPException, status
 
 import database as db
 
@@ -26,6 +28,7 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 
 # Inicialização da aplicação FastAPI
 app = FastAPI()
+UPLOAD_DIR = "uploads"
 
 # Obrigatório para o Authlib/OAuth gerir o estado de sessão temporário durante o login externo
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET", "chave_temporaria_segura"))
@@ -244,3 +247,14 @@ def download_ficheiro(nome_ficheiro: str):
     if os.path.exists(caminho):
         return FileResponse(caminho, filename=nome_ficheiro, media_type="application/pdf")
     return {"erro": "Ficheiro não encontrado"}
+
+ #==========================================
+# 7. APAGAR FICHEIROS DO SERVIDOR
+# ==========================================
+@app.delete("/apagar/{nome_ficheiro}")
+def apagar_ficheiro(nome_ficheiro: str):
+    caminho_ficheiro = os.path.join(UPLOAD_DIR, nome_ficheiro)
+    if os.path.exists(caminho_ficheiro):
+        os.remove(caminho_ficheiro)
+        return {"mensagem": "Ficheiro apagado com sucesso"}
+    raise HTTPException(status_code=404, detail="Ficheiro não encontrado")

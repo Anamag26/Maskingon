@@ -48,11 +48,10 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Montagem da pasta estática para servir HTML, CSS e JS
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="docs"), name="static")
 
 # Inicialização automática da Base de Dados e respetivas tabelas
 db.init_db()
-
 
 # ==========================================
 # 2. ROTAS DE NAVEGAÇÃO E PÁGINAS PRINCIPAIS
@@ -62,14 +61,14 @@ def landing_page(user_session: str = Cookie(default=None)):
     """Exibe a página inicial (Landing Page). Se o utilizador já tiver sessão ativa, redireciona para a app."""
     if user_session:
         return RedirectResponse(url="/app", status_code=302)
-    return FileResponse("static/index.html")
+    return FileResponse("docs/index.html")
 
 @app.get("/app")
 def app_dashboard(user_session: str = Cookie(default=None)):
     """Exibe o painel principal da aplicação. Se não estiver autenticado, manda-o de volta para o início."""
     if not user_session:
         return RedirectResponse(url="/", status_code=302)
-    return FileResponse("static/app.html")
+    return FileResponse("docs/app.html")
 
 
 # ==========================================

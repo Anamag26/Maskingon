@@ -1,0 +1,6 @@
+/* Esconde os botões e ícones do canto do terminal */
+.terminal-tabs-right-group,
+.terminal-actions,
+.part.panel .composite.title {
+    display: none !important;
+}

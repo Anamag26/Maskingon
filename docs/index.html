@@ -10,7 +10,7 @@
             --card-bg: #ffffff;
             --text-primary: #1d1d1f;
             --text-secondary: #86868b;
-            --accent-blue: #0066cc;
+            --accent-blue: #ff5e62;
             --accent-blue-hover: #004499;
             --border-color: #d2d2d7;
             --radius-lg: 20px;
@@ -156,12 +156,48 @@
         .theme-toggle-btn svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 2; fill: none; }
         .icon-sun { display: block; } .icon-moon { display: none; }
         body.dark-theme .icon-sun { display: none; } body.dark-theme .icon-moon { display: block; }
+
+        .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        user-select: none;
+        }
+
+        .logo-icon {
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        /* Efeito subtil ao passar o cursor no logótipo */
+        .logo:hover .logo-icon {
+            transform: scale(1.08);
+        }
+
+        .logo-accent {
+            color: var(--accent-blue);
+            font-weight: 700;
+        }           
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">MaskingVault</div>
+    <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Escudo / Cofre de proteção exterior -->
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Linha interna de sanitização / masking -->
+        <path d="M9 10h6M8 14h8" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span>Masking<span class="logo-accent">Vault</span></span>
+</div>
     <div class="nav-btns">
         <button class="btn-nav" onclick="openAuth('login')">Iniciar Sessão</button>
         <button class="btn-nav btn-primary" onclick="openAuth('register')">Criar Conta</button>
